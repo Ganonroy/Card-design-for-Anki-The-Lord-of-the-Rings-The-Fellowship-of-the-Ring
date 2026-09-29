@@ -1,0 +1,1272 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap');
+
+/* ==========================================
+   ULTRA REALISTIC ELEGANT VERSION
+
+   - Leather with real relief (SVG lighting filter, lit from the top-left)
+   - Brushed gold foil frame; the light slowly drifts across it
+   - Card has thickness, like a plaque or a box lid
+   - Ring is a beveled gold band with a slow glint, not a glow
+   - Audio button is a metal coin with a brushed rim
+   - Gold-leaf header, letterpress text
+
+   Same class names as before: your Front template (with .ghost
+   placeholders) and Back template (with the script) work unchanged.
+   ========================================== */
+
+@property --fa {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 20deg;
+}
+
+@property --ra {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --sheen {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 130%;
+}
+
+
+:root {
+  --bg: #101914;
+  --ivory: #f0e8d4;
+  --gold: #cfae5c;
+  --gold-bright: #ecd48f;
+  --gold-pale: #f8ecc4;
+  --gold-deep: #8a6f33;
+  --gold-dark: #5a4620;
+  --amber: #f0bb55;
+  --hairline: rgba(207, 174, 92, .40);
+  --line: linear-gradient(90deg, transparent, rgba(207, 174, 92, .6) 50%, transparent);
+  --corner: rgba(226, 190, 100, .92);
+
+  /* one height for front AND back */
+  --card-h: 500px;
+
+  /* corner geometry: card radius 20px minus the 8px inset of the inner outline */
+  --in: 8px;
+  --arc: 12px;
+  --arm: 44px;
+  --bead: calc(var(--in) + var(--arc) - (var(--arc) - 1px) * .707 - 4px);
+  --arcfill: transparent calc(var(--arc) - 1.9px), var(--corner) calc(var(--arc) - 1.5px), var(--corner) calc(var(--arc) - .4px), transparent var(--arc);
+
+  /* a small metal sphere for each corner */
+  --pearl: radial-gradient(circle closest-side, var(--gold-pale) 0, var(--gold-bright) 30%, var(--gold-deep) 82%, transparent 100%);
+
+  /* leather with real relief: noise turned into a height map, then lit.
+     Stronger relief: raise surfaceScale (1.4). Finer grain: raise baseFrequency (.11). */
+  --leather: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='l' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.11' numOctaves='3' seed='7' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' surfaceScale='1.4' diffuseConstant='1' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='235' elevation='52'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");
+
+  --paper:
+    /* 1-4: curved corner arcs, hugging the inner line */
+    radial-gradient(circle at 100% 100%, var(--arcfill))
+      var(--in) var(--in) / var(--arc) var(--arc) no-repeat,
+    radial-gradient(circle at 0 100%, var(--arcfill))
+      right var(--in) top var(--in) / var(--arc) var(--arc) no-repeat,
+    radial-gradient(circle at 100% 0, var(--arcfill))
+      left var(--in) bottom var(--in) / var(--arc) var(--arc) no-repeat,
+    radial-gradient(circle at 0 0, var(--arcfill))
+      right var(--in) bottom var(--in) / var(--arc) var(--arc) no-repeat,
+
+    /* 5-12: arms leaving each arc, tapering away */
+    linear-gradient(90deg, var(--corner), transparent)
+      calc(var(--in) + var(--arc)) var(--in) / var(--arm) 1.5px no-repeat,
+    linear-gradient(180deg, var(--corner), transparent)
+      var(--in) calc(var(--in) + var(--arc)) / 1.5px var(--arm) no-repeat,
+    linear-gradient(270deg, var(--corner), transparent)
+      right calc(var(--in) + var(--arc)) top var(--in) / var(--arm) 1.5px no-repeat,
+    linear-gradient(180deg, var(--corner), transparent)
+      right var(--in) top calc(var(--in) + var(--arc)) / 1.5px var(--arm) no-repeat,
+    linear-gradient(90deg, var(--corner), transparent)
+      left calc(var(--in) + var(--arc)) bottom var(--in) / var(--arm) 1.5px no-repeat,
+    linear-gradient(0deg, var(--corner), transparent)
+      left var(--in) bottom calc(var(--in) + var(--arc)) / 1.5px var(--arm) no-repeat,
+    linear-gradient(270deg, var(--corner), transparent)
+      right calc(var(--in) + var(--arc)) bottom var(--in) / var(--arm) 1.5px no-repeat,
+    linear-gradient(0deg, var(--corner), transparent)
+      right var(--in) bottom calc(var(--in) + var(--arc)) / 1.5px var(--arm) no-repeat,
+
+    /* 13-16: pearls */
+    var(--pearl) var(--bead) var(--bead) / 8px 8px no-repeat,
+    var(--pearl) right var(--bead) top var(--bead) / 8px 8px no-repeat,
+    var(--pearl) left var(--bead) bottom var(--bead) / 8px 8px no-repeat,
+    var(--pearl) right var(--bead) bottom var(--bead) / 8px 8px no-repeat,
+
+    /* 17: gold-leaf tab at the top edge */
+    linear-gradient(90deg, transparent, var(--gold-bright), transparent)
+      50% 0 / 110px 2px no-repeat,
+
+    /* 18-20: a single light source at the top-left, cool fill, warm bounce */
+    radial-gradient(ellipse 70% 45% at 18% 0%, rgba(255, 240, 200, .075) 0%, transparent 70%),
+    radial-gradient(ellipse 85% 55% at 50% 0%, rgba(84, 138, 112, .20) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(207, 174, 92, .05) 0%, transparent 70%),
+
+    /* 21: leather relief (blended with overlay, see --paper-blend) */
+    var(--leather) 0 0 / 240px 240px repeat,
+
+    /* 22: base colour */
+    linear-gradient(180deg, rgba(13, 23, 19, .97) 0%, rgba(5, 10, 8, .99) 100%);
+
+  /* blend modes, one per layer above: only the leather (layer 21) is 'overlay' */
+  --paper-blend:
+    normal, normal, normal, normal, normal,
+    normal, normal, normal, normal, normal,
+    normal, normal, normal, normal, normal,
+    normal, normal, normal, normal, normal,
+    overlay, normal;
+}
+
+
+/* ---------- Canvas ---------- */
+
+html,
+body,
+.card {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: var(--bg) !important;
+  color: var(--ivory);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  text-align: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+/* ---------- Background image ---------- */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+
+  background:
+    url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=75')
+    center / cover no-repeat;
+
+  opacity: .13;
+  filter: sepia(.7) hue-rotate(80deg) saturate(.9) contrast(1.15);
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* ---------- Static background overlay ---------- */
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, .45) 0%,
+      rgba(0, 0, 0, .30) 10%,
+      rgba(0, 0, 0, .18) 22%,
+      rgba(0, 0, 0, .08) 38%,
+      transparent 52%
+    ),
+    radial-gradient(circle, rgba(243, 214, 130, .45) 0, transparent 1.6px) 0 0 / 190px 230px,
+    radial-gradient(circle, rgba(243, 214, 130, .32) 0, transparent 1.3px) 60px 90px / 310px 270px,
+    radial-gradient(circle, rgba(243, 214, 130, .24) 0, transparent 1.1px) 130px 40px / 430px 350px,
+    radial-gradient(ellipse at 50% 42%, transparent 35%, rgba(0, 0, 0, .45) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* ---------- Main wrapper ---------- */
+
+.lotr-wrapper {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  width: 100%;
+  padding: 49px 12px 28px;
+  box-sizing: border-box;
+}
+
+
+/* ---------- Card container ---------- */
+
+.lotr-card-container {
+  width: 100%;
+  max-width: 580px;
+}
+
+
+/* ---------- The card: leather, foil frame, groove, thickness ---------- */
+
+.lotr-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  min-height: var(--card-h);
+
+  padding: 40px 40px 34px;
+  box-sizing: border-box;
+
+  background: var(--paper);
+  background-blend-mode: var(--paper-blend);
+
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+
+  border: 1px solid transparent;
+  border-radius: 20px;
+
+  /* the fine inner line */
+  outline: 1px solid rgba(207, 174, 92, .24);
+  outline-offset: -8px;
+
+  box-shadow:
+    /* dark groove just inside the foil */
+    inset 0 0 0 3px rgba(0, 0, 0, .40),
+    /* light catching the top edge, shade toward the bottom */
+    inset 0 2px 1px rgba(248, 236, 196, .10),
+    inset 0 -24px 44px rgba(0, 0, 0, .38),
+    /* thickness: the edge of the board below the face */
+    0 2px 0 #0b1511,
+    0 3px 0 #050a08,
+    0 4px 0 rgba(0, 0, 0, .9),
+    /* contact shadow, then a soft ambient one */
+    0 6px 8px rgba(0, 0, 0, .55),
+    0 16px 22px rgba(0, 0, 0, .45),
+    0 36px 64px rgba(0, 0, 0, .7),
+    0 0 90px rgba(207, 174, 92, .05);
+
+  color: var(--ivory);
+}
+
+
+.lotr-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ---------- Foil frame: brushed gold, light drifts slowly ---------- */
+
+.lotr-card::before {
+  content: '';
+
+  position: absolute;
+  inset: -1px;
+
+  padding: 2px;
+  border-radius: 21px;
+
+  background:
+    conic-gradient(
+      from var(--fa) at 50% 50%,
+      #f9e8b0 0%,
+      #b8923f 10%,
+      #6b5222 20%,
+      #ecd38a 31%,
+      #a0803a 43%,
+      #f6e2a0 55%,
+      #7d6229 67%,
+      #d9bb66 80%,
+      #94762f 90%,
+      #f9e8b0 100%
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+
+  mask-composite: exclude;
+
+  pointer-events: none;
+  z-index: 2;
+
+  animation: foilDrift 18s ease-in-out infinite alternate;
+}
+
+
+@keyframes foilDrift {
+  from {
+    --fa: 10deg;
+  }
+
+  to {
+    --fa: 55deg;
+  }
+}
+
+
+/* ---------- The ring: a beveled gold band ---------- */
+
+.lotr-card::after {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 330px;
+  height: 330px;
+
+  margin: -165px 0 0 -165px;
+
+  border-radius: 50%;
+
+  background:
+    /* a glint that travels round the band */
+    conic-gradient(
+      from var(--ra),
+      transparent 0deg,
+      rgba(255, 236, 170, .50) 36deg,
+      rgba(255, 250, 215, .72) 45deg,
+      rgba(243, 214, 130, .28) 58deg,
+      transparent 100deg,
+      transparent 360deg
+    ),
+
+    /* fixed metallic variation: the light doesn't move with the glint */
+    conic-gradient(
+      from 30deg,
+      rgba(235, 205, 120, .20),
+      rgba(110, 88, 38, .10) 25%,
+      rgba(235, 205, 120, .22) 50%,
+      rgba(110, 88, 38, .10) 75%,
+      rgba(235, 205, 120, .20)
+    ),
+
+    linear-gradient(
+      rgba(214, 178, 92, .08),
+      rgba(214, 178, 92, .08)
+    );
+
+  -webkit-mask:
+    radial-gradient(
+      farthest-side,
+      transparent calc(100% - 8px),
+      #000 calc(100% - 8px)
+    );
+
+  mask:
+    radial-gradient(
+      farthest-side,
+      transparent calc(100% - 8px),
+      #000 calc(100% - 8px)
+    );
+
+  pointer-events: none;
+  z-index: 0;
+
+  animation:
+    ringBlink 1.3s ease-out both,
+    ringSweep 14s linear infinite;
+}
+
+
+@keyframes ringSweep {
+  from {
+    --ra: 0deg;
+  }
+
+  to {
+    --ra: 360deg;
+  }
+}
+
+
+@keyframes ringBlink {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(255, 210, 110, 0));
+  }
+
+  20% {
+    filter: drop-shadow(0 0 7px rgba(255, 214, 120, .8)) saturate(1.4);
+  }
+
+  40% {
+    filter: drop-shadow(0 0 1px rgba(255, 210, 110, .2));
+  }
+
+  55% {
+    filter: drop-shadow(0 0 6px rgba(255, 214, 120, .7)) saturate(1.3);
+  }
+
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 210, 110, 0));
+  }
+}
+
+
+/* ---------- Turning the card ---------- */
+
+.lotr-card-front {
+  animation:
+    unfurl .7s cubic-bezier(.2, .9, .3, 1) both;
+}
+
+
+@keyframes unfurl {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+.lotr-card-back {
+  transform-origin: 0% 50%;
+
+  background:
+    linear-gradient(
+      105deg,
+      transparent calc(var(--sheen) - 18%),
+      rgba(239, 217, 150, .12) var(--sheen),
+      transparent calc(var(--sheen) + 18%)
+    ),
+
+    var(--paper);
+
+  /* one extra layer on top, so the blend list shifts by one */
+  background-blend-mode: normal, var(--paper-blend);
+
+  animation:
+    pageTurn .75s cubic-bezier(.2, .8, .2, 1) both,
+    sheen 1.3s ease-out .1s both;
+}
+
+
+@keyframes pageTurn {
+  from {
+    opacity: 0;
+    transform:
+      perspective(1400px)
+      rotateY(-28deg)
+      translateX(-14px)
+      scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      perspective(1400px)
+      rotateY(0)
+      translateX(0)
+      scale(1);
+  }
+}
+
+
+@keyframes sheen {
+  from {
+    --sheen: -20%;
+  }
+
+  to {
+    --sheen: 120%;
+  }
+}
+
+
+.lotr-card-back .lotr-extra {
+  animation: riseIn .6s ease-out .45s both;
+}
+
+.lotr-card-back .lotr-audio-bezel {
+  animation: riseIn .6s ease-out .6s both;
+}
+
+.lotr-card-back .lotr-image-frame {
+  animation: riseIn .6s ease-out .75s both;
+}
+
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+.lotr-card-back .cloze {
+  animation: ignite 1.2s ease-out .35s both;
+}
+
+
+@keyframes ignite {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(.94);
+  }
+
+  45% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1.04);
+
+    text-shadow:
+      0 0 16px rgba(246, 194, 91, .8),
+      0 0 32px rgba(255, 140, 40, .4);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, .65),
+      0 0 8px rgba(246, 194, 91, .32);
+  }
+}
+
+
+/* ---------- Header: gold-leaf stamping ---------- */
+
+.lotr-top-section {
+  order: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+}
+
+
+.lotr-header {
+  position: relative;
+
+  width: 100%;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+
+  box-sizing: border-box;
+
+  font:
+    500 11px/1.4 'Cinzel',
+    serif;
+
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+
+.lotr-header::after {
+  content: '';
+
+  position: absolute;
+
+  left: 15%;
+  bottom: 0;
+
+  width: 70%;
+  height: 1px;
+
+  background: var(--line);
+}
+
+
+/* the little diamond: faceted, like a set stone */
+
+.lotr-header::before {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  bottom: -4px;
+
+  width: 7px;
+  height: 7px;
+
+  background:
+    linear-gradient(135deg, var(--gold-pale) 0%, var(--gold-bright) 40%, var(--gold-deep) 100%);
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, .8),
+    0 0 6px rgba(207, 174, 92, .40);
+}
+
+
+.header-title {
+  display: inline-block;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--gold-pale) 0%,
+      var(--gold-bright) 32%,
+      var(--gold) 62%,
+      var(--gold-deep) 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+  color: var(--gold);
+
+  /* pressed into the leather: a lit lower lip and a dark upper edge */
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 236, 170, .16))
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, .85));
+}
+
+
+/* ---------- Header ornaments ---------- */
+
+.header-rune {
+  position: relative;
+
+  display: inline-block;
+  vertical-align: middle;
+
+  width: 17px;
+  height: 17px;
+
+  margin: 0 16px;
+
+  font-size: 0;
+  letter-spacing: 0;
+
+  filter:
+    drop-shadow(0 1px 1px rgba(0, 0, 0, .8))
+    drop-shadow(0 0 4px rgba(239, 217, 150, .45));
+
+  animation:
+    sparkIn 1.1s ease-out .3s both,
+    twinkle 4.6s ease-in-out 1.4s infinite;
+}
+
+
+.header-rune:last-child {
+  animation-delay:
+    .45s,
+    3.8s;
+}
+
+
+.header-rune::before,
+.header-rune::after {
+  content: '';
+
+  position: absolute;
+
+  background:
+    radial-gradient(
+      circle,
+      var(--gold-pale) 0%,
+      var(--gold-bright) 34%,
+      var(--gold) 72%
+    );
+
+  clip-path:
+    polygon(
+      50% 0,
+      56% 44%,
+      100% 50%,
+      56% 56%,
+      50% 100%,
+      44% 56%,
+      0 50%,
+      44% 44%
+    );
+}
+
+
+.header-rune::before {
+  inset: 0;
+}
+
+
+.header-rune::after {
+  right: -9px;
+  top: -6px;
+
+  width: 8px;
+  height: 8px;
+
+  opacity: .72;
+}
+
+
+.header-rune:first-child::after {
+  right: auto;
+  left: -9px;
+}
+
+
+@keyframes sparkIn {
+  from {
+    opacity: 0;
+    transform: scale(.3);
+  }
+
+  to {
+    opacity: .78;
+    transform: scale(.85);
+  }
+}
+
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: .78;
+    transform: scale(.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+
+/* ---------- Content: letterpress ---------- */
+
+.lotr-content {
+  order: 2;
+
+  margin: 2px 0 10px;
+
+  font-size: 24px;
+  line-height: 1.6;
+  font-weight: 500;
+
+  color: var(--ivory);
+
+  text-shadow:
+    0 -1px 0 rgba(255, 255, 255, .05),
+    0 1px 1px rgba(0, 0, 0, .9),
+    0 0 18px rgba(3, 7, 5, .95);
+
+  word-break: break-word;
+}
+
+
+/* pasted text often carries dark inline colours or backgrounds; neutralise them */
+
+.lotr-content *:not(.cloze) {
+  color: inherit !important;
+  background: transparent !important;
+}
+
+
+.lotr-content > :last-child {
+  margin-bottom: 0;
+}
+
+
+.lotr-content p {
+  margin: .35em 0;
+}
+
+
+.lotr-content ul,
+.lotr-content ol {
+  list-style: none;
+
+  margin: .5em 0 0;
+  padding: 0;
+}
+
+
+.lotr-content li {
+  text-align: center;
+  color: #d3c9b1;
+}
+
+
+.lotr-content ul > li::before {
+  content: '\2726';
+
+  display: inline-block;
+
+  margin-right: .55em;
+
+  font-size: .55em;
+  vertical-align: .25em;
+
+  color: var(--gold) !important;
+
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, .8);
+}
+
+
+/* ---------- Cloze ---------- */
+
+.cloze {
+  display: inline-block;
+
+  padding: 0 .02em;
+
+  font-weight: 700;
+
+  color: var(--amber) !important;
+
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, .65),
+    0 0 8px rgba(246, 194, 91, .32);
+}
+
+
+.lotr-content .cloze,
+.lotr-content .cloze * {
+  color: var(--amber) !important;
+  background: transparent !important;
+}
+
+
+/* ---------- Pronunciation ---------- */
+
+.lotr-extra {
+  order: 4;
+
+  position: relative;
+
+  width: 100%;
+
+  margin: 26px 0 0;
+  padding-top: 22px;
+
+  font-family:
+    'Cormorant Garamond',
+    'Gentium Plus',
+    'Charis SIL',
+    'Doulos SIL',
+    'Times New Roman',
+    serif;
+
+  font-size: 21px;
+  font-style: italic;
+  letter-spacing: .6px;
+}
+
+
+.lotr-extra,
+.lotr-extra * {
+  color: var(--gold-bright) !important;
+
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, .8) !important;
+}
+
+
+.lotr-extra::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 30%;
+
+  width: 40%;
+  height: 1px;
+
+  background: var(--line);
+}
+
+
+.lotr-extra::after {
+  content: '';
+
+  position: absolute;
+
+  top: -3.5px;
+  left: 50%;
+
+  width: 7px;
+  height: 7px;
+
+  background:
+    linear-gradient(135deg, var(--gold-pale) 0%, var(--gold-bright) 40%, var(--gold-deep) 100%);
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, .8);
+}
+
+
+/* ---------- Audio button: a metal coin with a brushed rim ---------- */
+
+.lotr-audio-bezel {
+  order: 3;
+
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 16px 0 2px;
+}
+
+
+.lotr-audio-bezel:empty {
+  display: none;
+}
+
+
+.lotr-audio-bezel a,
+.lotr-audio-bezel .replay-button {
+  display: inline-flex !important;
+
+  justify-content: center;
+  align-items: center;
+
+  width: 42px !important;
+  height: 42px !important;
+
+  border-radius: 50% !important;
+
+  border: 1.5px solid transparent !important;
+
+  /* face (dark green, lit from above) + a conic-gradient rim like brushed metal */
+  background:
+    radial-gradient(circle at 50% 28%, rgba(236, 212, 143, .16), transparent 62%) padding-box,
+    linear-gradient(180deg, #15221c, #08100d) padding-box,
+    conic-gradient(
+      from 20deg,
+      #f6e2a0, #8f7538, #e2c677, #6b5222, #f3dc98, #9a7c38, #f6e2a0
+    ) border-box !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(248, 236, 196, .28),
+    inset 0 -2px 3px rgba(0, 0, 0, .55),
+    0 0 0 3px rgba(0, 0, 0, .38),
+    0 1px 1px rgba(0, 0, 0, .9),
+    0 4px 9px rgba(0, 0, 0, .7) !important;
+
+  text-decoration: none !important;
+
+  outline: none !important;
+
+  cursor: pointer;
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.lotr-audio-bezel svg {
+  width: 17px !important;
+  height: 17px !important;
+
+  margin: 0 !important;
+
+  border: none !important;
+  background: transparent !important;
+
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .8));
+}
+
+
+.lotr-audio-bezel svg circle {
+  display: none !important;
+}
+
+
+.lotr-audio-bezel svg path {
+  fill: var(--gold-bright) !important;
+
+  transition: fill .18s ease;
+}
+
+
+.lotr-audio-bezel a:hover,
+.lotr-audio-bezel .replay-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    inset 0 1px 0 rgba(248, 236, 196, .40),
+    inset 0 -2px 3px rgba(0, 0, 0, .5),
+    0 0 0 3px rgba(0, 0, 0, .38),
+    0 1px 1px rgba(0, 0, 0, .9),
+    0 6px 13px rgba(0, 0, 0, .75),
+    0 0 14px rgba(207, 174, 92, .26) !important;
+}
+
+
+/* pressed: the coin sinks into the leather */
+
+.lotr-audio-bezel a:active,
+.lotr-audio-bezel .replay-button:active {
+  transform: translateY(1px) scale(.97);
+
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, .85),
+    0 0 0 3px rgba(0, 0, 0, .38),
+    0 1px 2px rgba(0, 0, 0, .7),
+    0 0 18px rgba(240, 187, 85, .48) !important;
+}
+
+
+.lotr-audio-bezel a:focus-visible,
+.lotr-audio-bezel .replay-button:focus-visible {
+  outline:
+    2px solid var(--gold-bright) !important;
+
+  outline-offset: 4px;
+}
+
+
+/* ---------- The "fire" burst on click ---------- */
+
+.lotr-audio-bezel::before,
+.lotr-audio-bezel::after {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 42px;
+  height: 42px;
+
+  margin: -21px 0 0 -21px;
+
+  border-radius: 50%;
+
+  border:
+    1.5px solid var(--gold-bright);
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+.lotr-audio-bezel::after {
+  border-color: var(--amber);
+}
+
+
+.lotr-audio-bezel.fired::before {
+  animation: fireRing .85s ease-out;
+}
+
+
+.lotr-audio-bezel.fired::after {
+  animation: fireRing .85s ease-out .14s;
+}
+
+
+.lotr-audio-bezel.fired a,
+.lotr-audio-bezel.fired .replay-button {
+  animation: fireFlare .7s ease-out;
+}
+
+
+@keyframes fireRing {
+  0% {
+    opacity: .85;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+
+
+@keyframes fireFlare {
+  0% {
+    transform: scale(.92);
+
+    box-shadow:
+      0 0 0 0 rgba(246, 194, 91, .85),
+      0 0 26px rgba(246, 194, 91, .9);
+  }
+
+  40% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* ---------- Image frame: a mounted photograph ---------- */
+
+.lotr-image-frame {
+  order: 5;
+
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+
+  max-width: 100%;
+  height: 192px;          /* fixed, so the front can reserve exactly this space */
+
+  margin: 20px auto 0;
+  padding: 5px;
+
+  box-sizing: border-box;
+
+  background: #040807;
+
+  border:
+    1px solid var(--hairline);
+
+  border-radius: 2px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .65),
+    0 1px 0 rgba(255, 236, 170, .08),
+    0 2px 3px rgba(0, 0, 0, .9),
+    0 12px 24px rgba(0, 0, 0, .7);
+}
+
+
+.lotr-image-frame:empty {
+  display: none;
+}
+
+
+.lotr-image-frame img {
+  display: block;
+
+  max-width: 100%;
+  max-height: 180px;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+
+  border-radius: 1px;
+
+  filter: saturate(.9) contrast(1.04) sepia(.08);
+}
+
+
+/* ---------- Ghosts: invisible placeholders on the front ---------- */
+/* Same space as the back-side extras, so both sides are the same size. */
+
+.ghost,
+.ghost * {
+  visibility: hidden !important;
+  pointer-events: none;
+}
+
+.ghost-btn {
+  display: block;
+  width: 42px;
+  height: 42px;
+}
+
+
+/* ---------- Mobile & accessibility ---------- */
+
+@media screen and (max-width: 480px) {
+
+  :root {
+    --arc: 8px;   /* card radius 16px minus the 8px inset */
+    --arm: 34px;
+    --card-h: 460px;
+  }
+
+  .lotr-wrapper {
+    padding: 37px 8px 14px;
+  }
+
+  .lotr-card {
+    padding: 30px 22px 26px;
+    border-radius: 16px;
+  }
+
+  .lotr-card::before {
+    border-radius: 17px;
+  }
+
+  .lotr-header {
+    font-size: 10px;
+    letter-spacing: 3.5px;
+    margin-bottom: 22px;
+  }
+
+  .header-rune {
+    width: 14px;
+    height: 14px;
+    margin: 0 12px;
+  }
+
+  .lotr-content {
+    font-size: 20px;
+  }
+
+  .lotr-extra {
+    font-size: 19px;
+  }
+
+  .lotr-card::after {
+    width: 250px;
+    height: 250px;
+    margin: -125px 0 0 -125px;
+  }
+}
+
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
