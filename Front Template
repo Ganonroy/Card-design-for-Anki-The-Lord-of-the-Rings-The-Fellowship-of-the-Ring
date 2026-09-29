@@ -1,0 +1,31 @@
+<div class="lotr-wrapper">
+<div class="lotr-card-container">
+<div class="lotr-card lotr-card-front">
+
+<div class="lotr-top-section">
+<div class="lotr-header">
+<span class="header-rune">✦</span>
+<span class="header-title">The Lord of the Rings</span>
+<span class="header-rune">✦</span>
+</div>
+
+<div class="lotr-content">
+{{cloze:Text}}
+</div>
+
+{{#Back Extra}}
+<div class="lotr-extra ghost">&nbsp;</div>
+{{/Back Extra}}
+</div>
+
+{{#Audio}}
+<div class="lotr-audio-bezel ghost"><span class="ghost-btn"></span></div>
+{{/Audio}}
+
+{{#Image}}
+<div class="lotr-image-frame ghost">&nbsp;</div>
+{{/Image}}
+
+</div>
+</div>
+</div>
