@@ -1,0 +1,37 @@
+<div class="lotr-wrapper">
+  <div class="lotr-card-container">
+    <div class="lotr-card lotr-card-back">
+      
+      <div class="lotr-top-section">
+        <div class="lotr-header">
+          <span class="header-rune">✦</span>
+          <span class="header-title">The Fellowship of the Ring</span>
+          <span class="header-rune">✦</span>
+        </div>
+        
+        <div class="lotr-content">
+          {{cloze:Text}}
+        </div>
+
+        {{#Back Extra}}
+        <div class="lotr-extra">
+          {{Back Extra}}
+        </div>
+        {{/Back Extra}}
+      </div>
+
+      {{#Audio}}
+      <div class="lotr-audio-bezel">
+        {{Audio}}
+      </div>
+      {{/Audio}}
+
+      {{#Image}}
+      <div class="lotr-image-frame">
+        {{Image}}
+      </div>
+      {{/Image}}
+
+    </div>
+  </div>
+</div>
